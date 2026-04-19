@@ -16,7 +16,10 @@ import { userDataMiddleware } from './lib/middlewares/user-data';
 const app = new Hono().basePath('/api')
 
 app.use('*', cors({
-  origin: ['http://localhost:5173', 'https://myuanggwe.vercel.app'],
+  origin: [
+    'http://localhost:5173',
+    'https://myuanggwe.vercel.app'
+  ],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
   allowHeaders: ['Content-Type', 'Authorization']

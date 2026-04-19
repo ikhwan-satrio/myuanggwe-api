@@ -9,7 +9,10 @@ export const auth = betterAuth({
     provider: 'sqlite',
     schema
   }),
-  trustedOrigins: ['http://localhost:5173', 'https://myuanggwe.vercel.app'],
+  trustedOrigins: [
+    'http://localhost:5173',
+    'https://myuanggwe.vercel.app',
+  ],
   appName: 'myuanggwe',
   plugins: [organization(), username()],
   secret: process.env.BETTER_AUTH_SECRET!,
