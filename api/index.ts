@@ -1,0 +1,8 @@
+import app from '../src/index';
+import { handle } from 'hono/vercel';
+
+export const GET = handle(app);
+export const POST = handle(app);
+export const PUT = handle(app);
+export const DELETE = handle(app);
+export const OPTIONS = handle(app);
