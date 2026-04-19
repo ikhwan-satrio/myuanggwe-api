@@ -3,7 +3,8 @@
   "version": "1.0.50",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "bun run --watch src/index.ts"
+    "dev": "bun run --watch src/index.ts",
+    "build": "esbuild src/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@libsql/client"
   },
   "dependencies": {
     "@elysiajs/cors": "^1.4.1",
@@ -19,7 +20,8 @@
   "devDependencies": {
     "bun-types": "latest",
     "drizzle-kit": "^0.31.10",
-    "drizzle-orm": "^0.45.2"
+    "drizzle-orm": "^0.45.2",
+    "esbuild": "^0.28.0"
   },
   "module": "src/index.js"
 }
