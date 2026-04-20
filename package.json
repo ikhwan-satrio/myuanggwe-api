@@ -21,5 +21,8 @@
     "tsx": "^4.21.0",
     "typescript": "^6.0.3"
   },
+  "imports": {
+    "#server/*": "./src/*"
+  },
   "module": "src/index.js"
 }
