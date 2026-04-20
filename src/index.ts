@@ -46,6 +46,11 @@ const app = new Hono().basePath('/api')
     await processRecurringTransactions(user.id, activeOrg?.id);
     return c.json({ user, session: authSession, organizations, activeOrg });
   })
+    
+  // health
+  .get('/health', (c) => {
+    return c.text("ok")
+  })
 
   // route groups — pakai .route() bukan .use()
   .route('/orgs', orgsGroups)
