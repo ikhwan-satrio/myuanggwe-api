@@ -14,49 +14,48 @@ import { betterAuthMiddleware } from './lib/middlewares/better-auth';
 import { userDataMiddleware } from './lib/middlewares/user-data';
 
 const app = new Hono().basePath('/api')
+  .use('*', cors({
+    origin: [
+      'http://localhost:5173',
+      'https://myuanggwe.vercel.app'
+    ],
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true,
+    allowHeaders: ['Content-Type', 'Authorization']
+  }))
 
-app.use('*', cors({
-  origin: [
-    'http://localhost:5173',
-    'https://myuanggwe.vercel.app'
-  ],
-  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true,
-  allowHeaders: ['Content-Type', 'Authorization']
-}))
+  // auth handler harus sebelum middleware lain
+  .on(['POST', 'GET'], '/auth/*', (c) => {
+    return auth.handler(c.req.raw);
+  })
 
-// auth handler harus sebelum middleware lain
-app.on(['POST', 'GET'], '/auth/*', (c) => {
-  return auth.handler(c.req.raw);
-});
+  .use('*', betterAuthMiddleware)
+  .use('*', userDataMiddleware)
 
-app.use('*', betterAuthMiddleware);
-app.use('*', userDataMiddleware);
+  // layout route
+  .get('/layout', async (c) => {
+    const user = c.get('user');
+    const authSession = c.get('session');
+    const activeOrg = c.get('activeOrg');
+    const organizations = c.get('organizations');
 
-// layout route
-app.get('/layout', async (c) => {
-  const user = c.get('user');
-  const authSession = c.get('session');
-  const activeOrg = c.get('activeOrg');
-  const organizations = c.get('organizations');
+    if (!authSession) {
+      return c.json({ user: null, activeOrg: null, organizations: [] });
+    }
 
-  if (!authSession) {
-    return c.json({ user: null, activeOrg: null, organizations: [] });
-  }
+    await processRecurringTransactions(user.id, activeOrg?.id);
+    return c.json({ user, session: authSession, organizations, activeOrg });
+  })
 
-  await processRecurringTransactions(user.id, activeOrg?.id);
-  return c.json({ user, session: authSession, organizations, activeOrg });
-});
-
-// route groups — pakai .route() bukan .use()
-app.route('/orgs', orgsGroups);
-app.route('/dashboard', dashboardGroup);
-app.route('/wallets', walletsGroup);
-app.route('/transactions', transactionsGroup);
-app.route('/categories', categoriesGroup);
-app.route('/manage-orgs', manageOrgsGroup);
-app.route('/budgets', budgetsGroup);
-app.route('/recurring', recurringGroup);
-app.route('/goals', goalsGroup);
+  // route groups — pakai .route() bukan .use()
+  .route('/orgs', orgsGroups)
+  .route('/dashboard', dashboardGroup)
+  .route('/wallets', walletsGroup)
+  .route('/transactions', transactionsGroup)
+  .route('/categories', categoriesGroup)
+  .route('/manage-orgs', manageOrgsGroup)
+  .route('/budgets', budgetsGroup)
+  .route('/recurring', recurringGroup)
+  .route('/goals', goalsGroup)
 
 export default app;
